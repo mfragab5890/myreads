@@ -7,10 +7,13 @@ class BookItem extends React.Component {
         <div className="book">
           <div className="book-top">
             <div className="book-cover" style={{ width: 128, height: 193, backgroundImage: `url(${this.props.url})` }}></div>
-              <CategorySelect/>
+              <CategorySelect
+                id = {this.props.id}
+                onShelfChange = {this.props.onShelfChange}
+              />
             </div>
             <div className="book-title">{this.props.title}</div>
-            <div className="book-authors">{this.props.authors.join(', ')}</div>
+            <div className="book-authors">{this.props.authors ? this.props.authors.join(', ') : this.props.authors}</div>
           </div>
       </li>
     );

@@ -1,8 +1,10 @@
 import React from 'react'
 import {Link} from 'react-router-dom'
+import BookItem from './BookItem'
 
 class SearchComponent extends React.Component {
   render(){
+    const errorClass = this.props.error === ''? "ui icon hidden message": "ui icon message"
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -21,13 +23,48 @@ class SearchComponent extends React.Component {
               However, remember that the BooksAPI.search method DOES search by title or author. So, don't worry if
               you don't find a specific author or title. Every search is limited by search terms.
             */}
-            <input type="text" placeholder="Search by title or author"/>
+            <input
+              type="text"
+              placeholder="Search by title or author"
+              value = {this.props.value}
+              onChange = {(e) => {
+                this.props.onSearchInputChange(e.target.value)
+              }}
+              />
 
           </div>
         </div>
         <div className="search-books-results">
-          <ol className="books-grid"></ol>
+          <ol className="books-grid">
+            { this.props.results &&
+              (this.props.results.map((book) => {
+                if (book.hasOwnProperty('shelf')) {
+                  console.log(book);
+                }
+                return (
+                  <BookItem
+                    key = {book.id}
+                    id = {book.id}
+                    title = {book.title}
+                    authors = {book.authors}
+                    url = {book.imageLinks ? book.imageLinks.thumbnail: '' }
+                    onShelfChange = {this.props.onShelfChange}
+                  />
+                );
+              }))
+          }
+          </ol>
         </div>
+        <div className={errorClass}>
+          <i className="search icon"></i>
+          <div className="content">
+            <div className="header">
+              `Searching for {this.props.value}?`
+            </div>
+            <p>{this.props.error}</p>
+          </div>
+        </div>
+
       </div>
     );
   }

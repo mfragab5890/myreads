@@ -12,6 +12,7 @@ class BookList extends React.Component {
           key = {shelf}
           name = {shelf}
           books = {shelves[shelf]}
+          onShelfChange = {this.props.onShelfChange}
         />
         )
     }

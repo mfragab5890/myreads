@@ -12,10 +12,122 @@ class BooksApp extends React.Component {
       wantToRead : [],
       read : []
     },
+    searchTerm : '',
+    results : []
 
   }
 
-  onShelfChange = (book,shelf) => {
+  onShelfChange = (bookId,shelf) => {
+    let prevShelf = ''
+    let newBook = {}
+    BooksAPI.get(bookId)
+    .then(book => {
+      newBook = book
+      newBook.shelf = shelf
+      prevShelf = book.shelf
+      console.log(prevShelf);
+      BooksAPI.update(book,shelf)
+    })
+    .then(() => {
+      if (prevShelf !== 'none') {
+        if (shelf === 'currentlyReading') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading.concat(newBook),
+                wantToRead : prevState.shelves.wantToRead,
+                read : prevState.shelves.read
+
+            }};
+          })
+
+        }else if (shelf === 'wantToRead') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading,
+                wantToRead : prevState.shelves.wantToRead.concat(newBook),
+                read : prevState.shelves.read
+            }};
+          })
+        }else if (shelf === 'read') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading,
+                wantToRead : prevState.shelves.wantToRead,
+                read : prevState.shelves.read.concat(newBook)
+            }};
+          })
+        }
+
+        if (prevShelf === 'currentlyReading') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading.filter(
+                  (book) => book.id !== bookId
+                ),
+                wantToRead : prevState.shelves.wantToRead,
+                read : prevState.shelves.read
+            }};
+          })
+
+        }else if (prevShelf === 'wantToRead') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading,
+                wantToRead : prevState.shelves.wantToRead.filter(
+                  (book) => book.id !== bookId
+                ),
+                read : prevState.shelves.read
+            }};
+          })
+        }else if (prevShelf === 'read') {
+          this.setState((prevState) => {
+            return {
+              shelves :{
+                currentlyReading : prevState.shelves.currentlyReading,
+                wantToRead : prevState.shelves.wantToRead,
+                read : prevState.shelves.read.filter(
+                  (book) => book.id !== bookId
+                )
+            }};
+          })
+        }
+      }
+      console.log(bookId, shelf, prevShelf);
+    })
+  }
+
+  onSearchInputChange = async (searchTerm) => {
+    await this.setState({
+      searchTerm : searchTerm
+    })
+    if (searchTerm !== '') {
+      BooksAPI.search(searchTerm).then((books) => {
+        if (!books.hasOwnProperty('error')) {
+          this.setState({
+            results : books,
+            error : ''
+          })
+        }
+        else {
+          this.setState({
+            results : [],
+            error : 'No results found, please try another query.'
+          })
+        }
+
+      })
+    }
+    else {
+      this.setState({
+        results : [],
+        error : ''
+      })
+    }
 
   }
 
@@ -59,7 +171,13 @@ class BooksApp extends React.Component {
           )}
         />
       <Route exact path='/search' render ={() => (
-            <SearchComponent/>
+            <SearchComponent
+              onSearchInputChange = {this.onSearchInputChange}
+              value = {this.state.searchTerm}
+              results = {this.state.results}
+              error = {this.state.error}
+              onShelfChange = {this.onShelfChange}
+            />
           )}
         />
 

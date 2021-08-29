@@ -15,9 +15,11 @@ class BookShelf extends React.Component {
                     return (
                       <BookItem
                         key = {book.id}
+                        id = {book.id}
                         title = {book.title}
                         authors = {book.authors}
-                        url = {book.imageLinks.thumbnail}
+                        url = {book.imageLinks.thumbnail ? book.imageLinks.thumbnail: '' }
+                        onShelfChange = {this.props.onShelfChange}
                       />
                     );
                   })
