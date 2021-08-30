@@ -18,7 +18,7 @@ class BooksApp extends React.Component {
     error : ''
   }
 
-  addToShelf = (shelf,newBook) => {
+  addToShelf = async (shelf,newBook) => {
     if (shelf === 'currentlyReading') {
       this.setState((prevState) => {
         return {
@@ -31,7 +31,7 @@ class BooksApp extends React.Component {
       })
 
     }else if (shelf === 'wantToRead') {
-      this.setState((prevState) => {
+      await this.setState((prevState) => {
         return {
           shelves :{
             currentlyReading : prevState.shelves.currentlyReading,
@@ -40,7 +40,7 @@ class BooksApp extends React.Component {
         }};
       })
     }else if (shelf === 'read') {
-      this.setState((prevState) => {
+      await this.setState((prevState) => {
         return {
           shelves :{
             currentlyReading : prevState.shelves.currentlyReading,
@@ -52,9 +52,9 @@ class BooksApp extends React.Component {
 
   }
 
-  removeFromShelf = (prevShelf,bookId) => {
+  removeFromShelf = async (prevShelf,bookId) => {
     if (prevShelf === 'currentlyReading') {
-      this.setState((prevState) => {
+      await this.setState((prevState) => {
         return {
           shelves :{
             currentlyReading : prevState.shelves.currentlyReading.filter(
@@ -66,7 +66,7 @@ class BooksApp extends React.Component {
       })
 
     }else if (prevShelf === 'wantToRead') {
-      this.setState((prevState) => {
+      await this.setState((prevState) => {
         return {
           shelves :{
             currentlyReading : prevState.shelves.currentlyReading,
@@ -77,7 +77,7 @@ class BooksApp extends React.Component {
         }};
       })
     }else if (prevShelf === 'read') {
-      this.setState((prevState) => {
+      await this.setState((prevState) => {
         return {
           shelves :{
             currentlyReading : prevState.shelves.currentlyReading,
@@ -90,8 +90,8 @@ class BooksApp extends React.Component {
     }
   }
 
-  updateAllBooks = (shelf,bookId) => {
-    this.setState((prevState) => {
+  updateAllBooks = async (shelf,bookId) => {
+    await this.setState((prevState) => {
       const newAllBooks = prevState.allBooks.map((book) => {
         if (book.id === bookId) {
           book.shelf = shelf
@@ -104,16 +104,16 @@ class BooksApp extends React.Component {
     })
   }
 
-  addToAllBooks = (newBook) => {
-    this.setState((prevState) => {
+  addToAllBooks = async (newBook) => {
+    await this.setState((prevState) => {
       return {allBooks : prevState.allBooks.concat(newBook)}
     })
   }
 
-  onShelfChange = (bookId,shelf) => {
+  onShelfChange = async (bookId,shelf) => {
     let prevShelf = ''
     let newBook = {}
-    BooksAPI.get(bookId)
+    await BooksAPI.get(bookId)
     .then(book => {
       prevShelf = book.shelf
       newBook = book
@@ -138,7 +138,7 @@ class BooksApp extends React.Component {
       searchTerm : searchTerm
     })
     if (searchTerm !== '') {
-      BooksAPI.search(searchTerm).then((books) => {
+      await BooksAPI.search(searchTerm).then((books) => {
         if (!books.hasOwnProperty('error')) {
           this.setState({
             results : books,
@@ -163,8 +163,8 @@ class BooksApp extends React.Component {
 
   }
 
-  componentDidMount(){
-      BooksAPI.getAll()
+  async componentDidMount(){
+      await BooksAPI.getAll()
       .then((books) =>{
         this.setState({allBooks:books})
         const currentlyReading = []
