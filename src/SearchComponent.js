@@ -11,11 +11,11 @@ class SearchComponent extends React.Component {
     return (
       <div className="search-books">
         <div className="search-books-bar">
-          <Link to={{
+          <Link
+            to = {{
             pathname: '/'
           }}>
-            <button className="close-search">
-            </button>
+            <i className="arrow alternate circle left huge icon"></i>
           </Link>
           <div className="search-books-input-wrapper">
             {/*
@@ -41,8 +41,9 @@ class SearchComponent extends React.Component {
           <ol className="books-grid">
             { results &&
               (results.map((book) => {
-                const bookExist = allBooks.filter((myBook) => myBook.id === book.id )
-                const shelf = bookExist.length > 0 ? bookExist[0].shelf : ''
+                const bookExist = allBooks.find((myBook) => myBook.id === book.id )
+                const shelf = bookExist ? bookExist.shelf : ''
+                console.log(shelf);
                 return (
                   <BookItem
                     key = {book.id}

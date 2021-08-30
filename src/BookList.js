@@ -26,7 +26,7 @@ class BookList extends React.Component {
           <Link to={{
             pathname: '/search'
           }}>
-            <button>Add a book</button>
+            <i className="plus circle link huge green icon"></i>
           </Link>
         </div>
       </div>
