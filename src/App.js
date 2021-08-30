@@ -14,8 +14,8 @@ class BooksApp extends React.Component {
       read : []
     },
     searchTerm : '',
-    results : []
-
+    results : [],
+    error : ''
   }
 
   addToShelf = (shelf,newBook) => {
@@ -155,7 +155,7 @@ class BooksApp extends React.Component {
       })
     }
     else {
-      this.setState({
+      await this.setState({
         results : [],
         error : ''
       })

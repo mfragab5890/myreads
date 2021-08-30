@@ -4,7 +4,7 @@ import BookItem from './BookItem'
 
 class SearchComponent extends React.Component {
   render(){
-    const errorClass = this.props.error === ''? "ui icon hidden message": "ui icon message"
+    const errorClass = this.props.error === '' ? "ui icon hidden message": "ui icon message"
     const results = this.props.results
     const allBooks = this.props.allBooks
 
