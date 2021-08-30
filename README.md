@@ -2,7 +2,7 @@
 
 This is a React web application where user has three different shelves to store his books `Currently Reading`, `Want To Read` and `Read`, user can change the category of the his books to relocate them to a different shelf, user can also search for a book by `Title` or `Author` and add a book of his choice to the shelf he want.
 
-## TL;DR
+## Getting Started
 
 To get started developing right away:
 
