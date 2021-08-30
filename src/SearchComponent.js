@@ -5,6 +5,9 @@ import BookItem from './BookItem'
 class SearchComponent extends React.Component {
   render(){
     const errorClass = this.props.error === ''? "ui icon hidden message": "ui icon message"
+    const results = this.props.results
+    const allBooks = this.props.allBooks
+
     return (
       <div className="search-books">
         <div className="search-books-bar">
@@ -36,11 +39,10 @@ class SearchComponent extends React.Component {
         </div>
         <div className="search-books-results">
           <ol className="books-grid">
-            { this.props.results &&
-              (this.props.results.map((book) => {
-                if (book.hasOwnProperty('shelf')) {
-                  console.log(book);
-                }
+            { results &&
+              (results.map((book) => {
+                const bookExist = allBooks.filter((myBook) => myBook.id === book.id )
+                const shelf = bookExist.length > 0 ? bookExist[0].shelf : ''
                 return (
                   <BookItem
                     key = {book.id}
@@ -49,6 +51,7 @@ class SearchComponent extends React.Component {
                     authors = {book.authors}
                     url = {book.imageLinks ? book.imageLinks.thumbnail: '' }
                     onShelfChange = {this.props.onShelfChange}
+                    shelf  ={shelf}
                   />
                 );
               }))

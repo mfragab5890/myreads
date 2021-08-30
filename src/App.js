@@ -7,6 +7,7 @@ import {Route} from 'react-router-dom'
 
 class BooksApp extends React.Component {
   state = {
+    allBooks : [],
     shelves : {
       currentlyReading : [],
       wantToRead : [],
@@ -17,87 +18,118 @@ class BooksApp extends React.Component {
 
   }
 
+  addToShelf = (shelf,newBook) => {
+    if (shelf === 'currentlyReading') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading.concat(newBook),
+            wantToRead : prevState.shelves.wantToRead,
+            read : prevState.shelves.read
+
+        }};
+      })
+
+    }else if (shelf === 'wantToRead') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading,
+            wantToRead : prevState.shelves.wantToRead.concat(newBook),
+            read : prevState.shelves.read
+        }};
+      })
+    }else if (shelf === 'read') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading,
+            wantToRead : prevState.shelves.wantToRead,
+            read : prevState.shelves.read.concat(newBook)
+        }};
+      })
+    }
+
+  }
+
+  removeFromShelf = (prevShelf,bookId) => {
+    if (prevShelf === 'currentlyReading') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading.filter(
+              (book) => book.id !== bookId
+            ),
+            wantToRead : prevState.shelves.wantToRead,
+            read : prevState.shelves.read
+        }};
+      })
+
+    }else if (prevShelf === 'wantToRead') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading,
+            wantToRead : prevState.shelves.wantToRead.filter(
+              (book) => book.id !== bookId
+            ),
+            read : prevState.shelves.read
+        }};
+      })
+    }else if (prevShelf === 'read') {
+      this.setState((prevState) => {
+        return {
+          shelves :{
+            currentlyReading : prevState.shelves.currentlyReading,
+            wantToRead : prevState.shelves.wantToRead,
+            read : prevState.shelves.read.filter(
+              (book) => book.id !== bookId
+            )
+        }};
+      })
+    }
+  }
+
+  updateAllBooks = (shelf,bookId) => {
+    this.setState((prevState) => {
+      const newAllBooks = prevState.allBooks.map((book) => {
+        if (book.id === bookId) {
+          book.shelf = shelf
+        }
+        return book;
+      })
+      return {
+        allBooks : newAllBooks
+      }
+    })
+  }
+
+  addToAllBooks = (newBook) => {
+    this.setState((prevState) => {
+      return {allBooks : prevState.allBooks.concat(newBook)}
+    })
+  }
+
   onShelfChange = (bookId,shelf) => {
     let prevShelf = ''
     let newBook = {}
     BooksAPI.get(bookId)
     .then(book => {
+      prevShelf = book.shelf
       newBook = book
       newBook.shelf = shelf
-      prevShelf = book.shelf
-      console.log(prevShelf);
       BooksAPI.update(book,shelf)
     })
     .then(() => {
       if (prevShelf !== 'none') {
-        if (shelf === 'currentlyReading') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading.concat(newBook),
-                wantToRead : prevState.shelves.wantToRead,
-                read : prevState.shelves.read
-
-            }};
-          })
-
-        }else if (shelf === 'wantToRead') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading,
-                wantToRead : prevState.shelves.wantToRead.concat(newBook),
-                read : prevState.shelves.read
-            }};
-          })
-        }else if (shelf === 'read') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading,
-                wantToRead : prevState.shelves.wantToRead,
-                read : prevState.shelves.read.concat(newBook)
-            }};
-          })
-        }
-
-        if (prevShelf === 'currentlyReading') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading.filter(
-                  (book) => book.id !== bookId
-                ),
-                wantToRead : prevState.shelves.wantToRead,
-                read : prevState.shelves.read
-            }};
-          })
-
-        }else if (prevShelf === 'wantToRead') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading,
-                wantToRead : prevState.shelves.wantToRead.filter(
-                  (book) => book.id !== bookId
-                ),
-                read : prevState.shelves.read
-            }};
-          })
-        }else if (prevShelf === 'read') {
-          this.setState((prevState) => {
-            return {
-              shelves :{
-                currentlyReading : prevState.shelves.currentlyReading,
-                wantToRead : prevState.shelves.wantToRead,
-                read : prevState.shelves.read.filter(
-                  (book) => book.id !== bookId
-                )
-            }};
-          })
-        }
+        this.addToShelf(shelf,newBook)
+        this.removeFromShelf(prevShelf,bookId)
+        this.updateAllBooks(shelf,bookId)
       }
-      console.log(bookId, shelf, prevShelf);
+      else {
+        this.addToShelf(shelf,newBook)
+        this.addToAllBooks(newBook)
+      }
     })
   }
 
@@ -134,6 +166,7 @@ class BooksApp extends React.Component {
   componentDidMount(){
       BooksAPI.getAll()
       .then((books) =>{
+        this.setState({allBooks:books})
         const currentlyReading = []
         const wantToRead = []
         const read = []
@@ -177,6 +210,7 @@ class BooksApp extends React.Component {
               results = {this.state.results}
               error = {this.state.error}
               onShelfChange = {this.onShelfChange}
+              allBooks = {this.state.allBooks}
             />
           )}
         />

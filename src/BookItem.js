@@ -10,6 +10,7 @@ class BookItem extends React.Component {
               <CategorySelect
                 id = {this.props.id}
                 onShelfChange = {this.props.onShelfChange}
+                shelf = {this.props.shelf}
               />
             </div>
             <div className="book-title">{this.props.title}</div>
